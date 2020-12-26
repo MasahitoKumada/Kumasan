@@ -140,9 +140,7 @@ def normalization(face_landmarks):
 
 
 if __name__ == '__main__':
-    cap = cv2.imread('IMG_003.jpg')
-    # while cap.isOpened():
-    # ret, frame = cap.read()
+    cap = cv2.imread('IMG_001.jpg')
     gray = cv2.cvtColor(cap, cv2.COLOR_BGR2GRAY)
 
     landmarks = facemark(gray)
@@ -151,13 +149,21 @@ if __name__ == '__main__':
     # print(landmarks)
     for landmark in landmarks:
         for points in landmark:
+            # draw eyes
             if i >= 18 and i <= 61 and points[1] < 200 :
-                # draw eyes
                 cv2.drawMarker(cap, (points[0], points[1]), (21, 255, 12))
-            else:
+            # draw eyebrows
+            elif i >= 62 and i <= 105 and points[1] < 200:
                 cv2.drawMarker(cap, (points[0], points[1]), (255, 0, 0))
+            # draw lips
+            elif i >= 148 and i <= 178 and points[0] >= 100:
+                print(points)
+                cv2.drawMarker(cap, (points[0], points[1]), (0, 0, 255))
+            # draw nose
+            elif i >= 130 and i <= 147 and points[0] >= 100:
+                cv2.drawMarker(cap, (points[0], points[1]), (0, 255, 255))
             i = i + 1
-            
+
     cv2.imwrite("IMG.jpg", cap)
     # if cv2.waitKey(25) & 0xFF == ord('q'):
     #     break
