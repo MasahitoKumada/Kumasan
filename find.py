@@ -1,20 +1,36 @@
 import cv2
 import dlib
-import numpy
+import numpy as np
 import os
+import sys
+import glob
 
-# assert os.path.isfile('IMG_1111_riku2.jpg')
 
 # Cascade files directory path
 CASCADE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/haarcascades/"
 LEARNED_MODEL_PATH = os.path.dirname(
     os.path.abspath(__file__)) + "/"
-    #helen-dataset.datのPATH
 predictor = dlib.shape_predictor(
     LEARNED_MODEL_PATH + 'helen-dataset.dat')
-        # openCVの中のdataフォルダのhaarcascade_frontalface_default.xmlのPATH
 face_cascade = cv2.CascadeClassifier(
-    '/home/kuribo/.local/lib/python3.8/site-packages/cv2/data/haarcascade_frontalface_default.xml')
+    CASCADE_PATH + 'haarcascade_frontalface_default.xml')
+
+
+# In & Out: setting
+INPUT_DIR = './input/'
+OUTPUT_DIR = './output'
+
+
+# 顔の部位ラベル
+INDEX_NOSE = 1
+INDEX_RIGHT_EYEBROWS = 2
+INDEX_LEFT_EYEBROWS = 3
+INDEX_RIGHT_EYE = 4
+INDEX_LEFT_EYE = 5
+INDEX_OUTSIDE_LIPS = 6
+INDEX_INSIDE_LIPS = 7
+INDEX_CHIN = 8
+
 
 
 def face_position(gray_img):
@@ -56,30 +72,10 @@ def facemark(gray_img):
         landmarks = []
         for rect in rects:
             landmarks.append(
-                numpy.array(
+                np.array(
                     [[p.x, p.y] for p in predictor(gray_img, rect).parts()])
             )
     return landmarks
-
-def outlierCheck(parts):
-    xTotal = 0
-    yTotal = 0
-    num = 0
-    for part in parts:
-        xTotal += part[0]
-        yTotal += part[1]
-        num += 1
-
-    xAverage = xTotal / num
-    yAverage = yTotal / num
-
-    ret = []
-
-    for part in parts:
-        if part[0] > xAverage - 30 and part[0] < xAverage + 30 and part[1] > yAverage - 30 and part[1] < yAverage + 30:
-            ret.append(part)
-
-    return ret
 
 
 def normalization(face_landmarks):
@@ -130,37 +126,38 @@ def normalization(face_landmarks):
         add_list.remove(128)
         chin += add_list
 
+        # nose
         for nose_i, fm_i in enumerate(nose):
-            nose[nose_i] = facemark[fm_i]
-        nose = outlierCheck(nose)
-
+            # nose[nose_i] = facemark[fm_i]
+            nose[nose_i] = np.hstack([facemark[fm_i], INDEX_NOSE])
+        # right_eyebrow
         for reb_i, fm_i in enumerate(right_eyebrow):
-            right_eyebrow[reb_i] = facemark[fm_i]
-        right_eyebrow = outlierCheck(right_eyebrow)
-
+            # right_eyebrow[reb_i] = facemark[fm_i]
+            right_eyebrow[reb_i] = np.hstack([facemark[fm_i], INDEX_RIGHT_EYEBROWS])
+        # left_eyebrow
         for leb_i, fm_i in enumerate(left_eyebrow):
-            left_eyebrow[leb_i] = facemark[fm_i]
-        left_eyebrow = outlierCheck(left_eyebrow)
-
+            # left_eyebrow[leb_i] = facemark[fm_i]
+            left_eyebrow[leb_i] = np.hstack([facemark[fm_i], INDEX_LEFT_EYEBROWS])
+        # right_eye
         for re_i, fm_i in enumerate(right_eye):
-            right_eye[re_i] = facemark[fm_i]
-        right_eye = outlierCheck(right_eye)
-
+            # right_eye[re_i] = facemark[fm_i]
+            right_eye[re_i] = np.hstack([facemark[fm_i], INDEX_RIGHT_EYE])
+        # left_eye
         for le_i, fm_i in enumerate(left_eye):
-            left_eye[le_i] = facemark[fm_i]
-        left_eye = outlierCheck(left_eye)
-
+            # left_eye[le_i] = facemark[fm_i]
+            left_eye[le_i] = np.hstack([facemark[fm_i], INDEX_LEFT_EYE])
+        # outside_lips
         for ol_i, fm_i in enumerate(outside_lips):
-            outside_lips[ol_i] = facemark[fm_i]
-        outside_lips = outlierCheck(outside_lips)
-
+            # outside_lips[ol_i] = facemark[fm_i]
+            outside_lips[ol_i] = np.hstack([facemark[fm_i], INDEX_OUTSIDE_LIPS])
+        # inside_lips
         for il_i, fm_i in enumerate(inside_lips):
-            inside_lips[il_i] = facemark[fm_i]
-        inside_lips = outlierCheck(inside_lips)
-
+            # inside_lips[il_i] = facemark[fm_i]
+            inside_lips[il_i] = np.hstack([facemark[fm_i], INDEX_INSIDE_LIPS])
+        # chin
         for chin_i, fm_i in enumerate(chin):
-            chin[chin_i] = facemark[fm_i]
-        chin = outlierCheck(chin)
+            # chin[chin_i] = facemark[fm_i]
+            chin[chin_i] = np.hstack([facemark[fm_i], INDEX_CHIN])
 
         return_list.append(chin + nose + outside_lips + inside_lips +
                            right_eye + left_eye + right_eyebrow + left_eyebrow)
@@ -168,41 +165,55 @@ def normalization(face_landmarks):
     return return_list
 
 
+def drow(imp, points):
+
+    if  points[2]==INDEX_NOSE:
+        cv2.drawMarker(img, (points[0], points[1]), (21, 255, 12)) # (B, G, R): 緑
+    elif points[2]==INDEX_RIGHT_EYEBROWS:
+        cv2.drawMarker(img, (points[0], points[1]), (255, 0, 204)) # (B, G, R): ピンク
+    elif points[2]==INDEX_LEFT_EYEBROWS:
+        cv2.drawMarker(img, (points[0], points[1]), (255, 0, 204)) # (B, G, R): ピンク
+    elif points[2]==INDEX_RIGHT_EYE:
+        cv2.drawMarker(img, (points[0], points[1]), (0, 0, 204)) # (B, G, R): 赤
+    elif points[2]==INDEX_LEFT_EYE:
+        cv2.drawMarker(img, (points[0], points[1]), (0, 0, 204)) # (B, G, R): 赤
+    elif points[2]==INDEX_OUTSIDE_LIPS:
+        cv2.drawMarker(img, (points[0], points[1]), (255, 0, 0)) # (B, G, R): 青
+    elif points[2]==INDEX_INSIDE_LIPS:
+        cv2.drawMarker(img, (points[0], points[1]), (255, 0, 0)) # (B, G, R): 青
+    elif points[2]==INDEX_CHIN:
+        cv2.drawMarker(img, (points[0], points[1]), (0, 255, 255)) # (B, G, R): 緑
+
+
 if __name__ == '__main__':
-    cap = cv2.imread('IMG_013.jpg')
-    gray = cv2.cvtColor(cap, cv2.COLOR_BGR2GRAY)
 
-    landmarks = facemark(gray)
-    lsndmarks = normalization(landmarks)
-    i = 0
-    p = 0
-    num = 0
-    # print(landmarks)
-    for landmark in landmarks:
-        for points in landmark:
-            # draw eyes
-            if i >= 18 and i <= 61:#and points[1] < 200
-                cv2.drawMarker(cap, (points[0], points[1]), (21, 255, 12))
-            # draw eyebrows
-            elif i >= 62 and i <= 105 :#and points[1] < 200
-                cv2.drawMarker(cap, (points[0], points[1]), (255, 0, 0))
-            # draw lips
-            elif i >= 148 and i <= 178 :#and points[0] >= 100
-                # print(points)
-                p = p + points[0]
-                num = num + 1
-                cv2.drawMarker(cap, (points[0], points[1]), (0, 0, 255))
-            # draw nose
-            elif i >= 130 and i <= 147 :#and points[0] >= 100
-                cv2.drawMarker(cap, (points[0], points[1]), (0, 255, 255))
-            i = i + 1
-            # cv2.drawMarker(cap, (points[0], points[1]), (0, 255, 255))
+    image_paths = sorted(glob.glob(os.path.join(INPUT_DIR, '*.jpg')))
 
-    # print(p/num)
-    cv2.imwrite("IMG.jpg", cap)
-    # if cv2.waitKey(25) & 0xFF == ord('q'):
-    #     break
-    # img = cv2.imread()
+    # print(image_paths)
 
-    # cap.release()
-    # cv2.destroyAllWindows()
+    '''
+    [0~40]: chin
+    [41~57]: nose
+    [58~85]: outside of lips
+    [86-113]: inside of lips
+    [114-133]: right eye
+    [134-153]: left eye
+    [154-173]: right eyebrows
+    [174-193]: left eyebrows
+    '''
+
+    for image_path in image_paths:
+        img = cv2.imread(image_path)
+        # cv2.imshow(img)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        landmarks = facemark(gray)
+        # print(landmarks)
+        landmarks = normalization(landmarks)
+        print(landmarks)
+
+        for landmark in landmarks:
+            for points in landmark:
+                    drow(img, points)
+
+        root, ext = os.path.splitext(image_path)
+        cv2.imwrite(os.path.join(OUTPUT_DIR, root.split('/')[-1] + '_out' + ext), img)
