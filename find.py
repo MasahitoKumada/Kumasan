@@ -61,6 +61,27 @@ def facemark(gray_img):
             )
     return landmarks
 
+def outlierCheck(parts):
+    xTotal = 0
+    yTotal = 0
+    num = 0
+    for part in parts:
+        xTotal += part[0]
+        yTotal += part[1]
+        num += 1
+
+    xAverage = xTotal / num
+    yAverage = yTotal / num
+
+    ret = []
+
+    for part in parts:
+        if part[0] > xAverage - 30 and part[0] < xAverage + 30 and part[1] > yAverage - 30 and part[1] < yAverage + 30:
+            ret.append(part)
+
+    return ret
+
+
 def normalization(face_landmarks):
     return_list = []
     for facemark in face_landmarks:
@@ -111,27 +132,35 @@ def normalization(face_landmarks):
 
         for nose_i, fm_i in enumerate(nose):
             nose[nose_i] = facemark[fm_i]
+        nose = outlierCheck(nose)
 
         for reb_i, fm_i in enumerate(right_eyebrow):
             right_eyebrow[reb_i] = facemark[fm_i]
+        right_eyebrow = outlierCheck(right_eyebrow)
 
         for leb_i, fm_i in enumerate(left_eyebrow):
             left_eyebrow[leb_i] = facemark[fm_i]
+        left_eyebrow = outlierCheck(left_eyebrow)
 
         for re_i, fm_i in enumerate(right_eye):
             right_eye[re_i] = facemark[fm_i]
+        right_eye = outlierCheck(right_eye)
 
         for le_i, fm_i in enumerate(left_eye):
             left_eye[le_i] = facemark[fm_i]
+        left_eye = outlierCheck(left_eye)
 
         for ol_i, fm_i in enumerate(outside_lips):
             outside_lips[ol_i] = facemark[fm_i]
+        outside_lips = outlierCheck(outside_lips)
 
         for il_i, fm_i in enumerate(inside_lips):
             inside_lips[il_i] = facemark[fm_i]
+        inside_lips = outlierCheck(inside_lips)
 
         for chin_i, fm_i in enumerate(chin):
             chin[chin_i] = facemark[fm_i]
+        chin = outlierCheck(chin)
 
         return_list.append(chin + nose + outside_lips + inside_lips +
                            right_eye + left_eye + right_eyebrow + left_eyebrow)
@@ -140,30 +169,36 @@ def normalization(face_landmarks):
 
 
 if __name__ == '__main__':
-    cap = cv2.imread('IMG_001.jpg')
+    cap = cv2.imread('IMG_013.jpg')
     gray = cv2.cvtColor(cap, cv2.COLOR_BGR2GRAY)
 
     landmarks = facemark(gray)
     lsndmarks = normalization(landmarks)
     i = 0
+    p = 0
+    num = 0
     # print(landmarks)
     for landmark in landmarks:
         for points in landmark:
             # draw eyes
-            if i >= 18 and i <= 61 and points[1] < 200 :
+            if i >= 18 and i <= 61:#and points[1] < 200
                 cv2.drawMarker(cap, (points[0], points[1]), (21, 255, 12))
             # draw eyebrows
-            elif i >= 62 and i <= 105 and points[1] < 200:
+            elif i >= 62 and i <= 105 :#and points[1] < 200
                 cv2.drawMarker(cap, (points[0], points[1]), (255, 0, 0))
             # draw lips
-            elif i >= 148 and i <= 178 and points[0] >= 100:
-                print(points)
+            elif i >= 148 and i <= 178 :#and points[0] >= 100
+                # print(points)
+                p = p + points[0]
+                num = num + 1
                 cv2.drawMarker(cap, (points[0], points[1]), (0, 0, 255))
             # draw nose
-            elif i >= 130 and i <= 147 and points[0] >= 100:
+            elif i >= 130 and i <= 147 :#and points[0] >= 100
                 cv2.drawMarker(cap, (points[0], points[1]), (0, 255, 255))
             i = i + 1
+            # cv2.drawMarker(cap, (points[0], points[1]), (0, 255, 255))
 
+    # print(p/num)
     cv2.imwrite("IMG.jpg", cap)
     # if cv2.waitKey(25) & 0xFF == ord('q'):
     #     break
