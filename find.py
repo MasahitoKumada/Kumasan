@@ -151,12 +151,13 @@ if __name__ == '__main__':
     # print(landmarks)
     for landmark in landmarks:
         for points in landmark:
-            if i >= 18 and i <= 61:
+            if i >= 18 and i <= 61 and points[1] < 200 :
+                # draw eyes
                 cv2.drawMarker(cap, (points[0], points[1]), (21, 255, 12))
             else:
                 cv2.drawMarker(cap, (points[0], points[1]), (255, 0, 0))
             i = i + 1
-            # print(i)
+            
     cv2.imwrite("IMG.jpg", cap)
     # if cv2.waitKey(25) & 0xFF == ord('q'):
     #     break
