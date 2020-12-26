@@ -168,29 +168,33 @@ def normalization(face_landmarks):
     return return_list
 
 
-def drow(img, points):
+def drow(img, face_part_select_dic):
 
-    if  points[2]==INDEX_NOSE:
-        cv2.drawMarker(img, (points[0], points[1]), (21, 255, 12)) # (B, G, R): 緑
-    elif points[2]==INDEX_RIGHT_EYEBROWS:
-        cv2.drawMarker(img, (points[0], points[1]), (255, 0, 204)) # (B, G, R): ピンク
-    elif points[2]==INDEX_LEFT_EYEBROWS:
-        cv2.drawMarker(img, (points[0], points[1]), (255, 0, 204)) # (B, G, R): ピンク
-    elif points[2]==INDEX_RIGHT_EYE:
-        cv2.drawMarker(img, (points[0], points[1]), (0, 0, 204)) # (B, G, R): 赤
-    elif points[2]==INDEX_LEFT_EYE:
-        cv2.drawMarker(img, (points[0], points[1]), (0, 0, 204)) # (B, G, R): 赤
-    elif points[2]==INDEX_OUTSIDE_LIPS:
-        cv2.drawMarker(img, (points[0], points[1]), (255, 0, 0)) # (B, G, R): 青
-    elif points[2]==INDEX_INSIDE_LIPS:
-        cv2.drawMarker(img, (points[0], points[1]), (255, 0, 0)) # (B, G, R): 青
-    elif points[2]==INDEX_CHIN:
-        cv2.drawMarker(img, (points[0], points[1]), (0, 255, 255)) # (B, G, R): 緑
+    for k, vs in face_part_select_dic.items():
+        if len(vs)==1:
+            continue
+        else:
+            for v in vs:
+                if k=='nose':
+                    cv2.drawMarker(img, (v[0], v[1]), (21, 255, 12)) # (B, G, R): 緑
+                elif k=='right_eyebrows':
+                    cv2.drawMarker(img, (v[0], v[1]), (255, 0, 204)) # (B, G, R): ピンク
+                elif k=='left_eyebrows':
+                    cv2.drawMarker(img, (v[0], v[1]), (255, 0, 204)) # (B, G, R): ピンク
+                elif k=='right_eye':
+                    cv2.drawMarker(img, (v[0], v[1]), (0, 0, 204)) # (B, G, R): 赤
+                elif k=='left_eye':
+                    cv2.drawMarker(img, (v[0], v[1]), (0, 0, 204)) # (B, G, R): 赤
+                elif k=='outside_lips':
+                    cv2.drawMarker(img, (v[0], v[1]), (255, 0, 0)) # (B, G, R): 青
+                elif k=='inside_lips':
+                    cv2.drawMarker(img, (v[0], v[1]), (255, 0, 0)) # (B, G, R): 青
+                elif k=='chin':
+                    cv2.drawMarker(img, (v[0], v[1]), (0, 255, 255)) # (B, G, R): 緑`
 
 
 def make_face_part_candidate_lst(face_part_candidate_dic, index_part_name,  landmarks):
 
-    
     tmp_arr = np.array([0, 0]) # 初期化
     for landmark in landmarks:    
         for points in landmark:
@@ -203,12 +207,7 @@ def make_face_part_candidate_lst(face_part_candidate_dic, index_part_name,  land
 
 
 
-
 def main():
-    image_paths = sorted(glob.glob(os.path.join(INPUT_DIR ,'*.jpg')))
-
-    # print(image_paths)
-
     '''
     [0~40]: chin
     [41~57]: nose
@@ -219,6 +218,10 @@ def main():
     [154-173]: right eyebrows
     [174-193]: left eyebrows
     '''
+
+    image_paths = sorted(glob.glob(os.path.join(INPUT_DIR ,'*.jpg')))
+
+    # print(image_paths)
 
     chin_lst = []
     nose_lst = []
@@ -285,9 +288,16 @@ def main():
         
 
     #顔候補のリスト
-    print(face_part_select_dic)
-    
+    # print(face_part_select_dic)
 
+    # for test
+    # 白のキャンバスを作成し、顔候補を描画
+    width = 500
+    height = 500
+    img = np.ones((height, width, 3), np.uint8)*255
+
+    drow(img, face_part_select_dic)
+    cv2.imwrite("test.jpg", img)
 
 
 if __name__ == '__main__':
