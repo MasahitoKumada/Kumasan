@@ -4,6 +4,9 @@ import numpy as np
 import os
 import sys
 import glob
+import random
+
+# random.seed(0)
 
 
 # Cascade files directory path
@@ -165,7 +168,7 @@ def normalization(face_landmarks):
     return return_list
 
 
-def drow(imp, points):
+def drow(img, points):
 
     if  points[2]==INDEX_NOSE:
         cv2.drawMarker(img, (points[0], points[1]), (21, 255, 12)) # (B, G, R): 緑
@@ -185,8 +188,23 @@ def drow(imp, points):
         cv2.drawMarker(img, (points[0], points[1]), (0, 255, 255)) # (B, G, R): 緑
 
 
-if __name__ == '__main__':
+def make_face_part_candidate_lst(face_part_candidate_dic, index_part_name,  landmarks):
 
+    
+    tmp_arr = np.array([0, 0]) # 初期化
+    for landmark in landmarks:    
+        for points in landmark:
+            # drow(img, points)
+            if points[2]==index_part_name:
+                tmp_arr = np.vstack([
+                    tmp_arr, [points[0], points[1]]
+                    ])
+    return tmp_arr[1:]
+
+
+
+
+def main():
     image_paths = sorted(glob.glob(os.path.join(INPUT_DIR ,'*.jpg')))
 
     # print(image_paths)
@@ -202,6 +220,27 @@ if __name__ == '__main__':
     [174-193]: left eyebrows
     '''
 
+    chin_lst = []
+    nose_lst = []
+    outside_lip_lst = []
+    inside_lips_lst = []
+    right_eye_lst = []
+    left_eye_lst = []
+    right_eyebrows_lst = []
+    left_eyebrows_lst = []
+
+    face_part_candidate_dic={
+        'chin':chin_lst, 'nose':nose_lst, 'outside_lips':outside_lip_lst, 'inside_lips':inside_lips_lst,
+        'right_eye':right_eye_lst, 'left_eye':left_eye_lst, 'right_eyebrows':right_eyebrows_lst,
+        'left_eyebrows':left_eyebrows_lst
+    }
+
+    face_part_select_dic={
+        'chin':chin_lst, 'nose':nose_lst, 'outside_lips':outside_lip_lst, 'inside_lips':inside_lips_lst,
+        'right_eye':right_eye_lst, 'left_eye':left_eye_lst, 'right_eyebrows':right_eyebrows_lst,
+        'left_eyebrows':left_eyebrows_lst
+    }
+
     for image_path in image_paths:
 
         img = cv2.imread(image_path)
@@ -209,11 +248,47 @@ if __name__ == '__main__':
         landmarks = facemark(gray)
         # print(landmarks)
         landmarks = normalization(landmarks)
-        print(landmarks)
+        # print(landmarks)
 
-        for landmark in landmarks:
-            for points in landmark:
-                    drow(img, points)
-        
+        each_img_chin = make_face_part_candidate_lst(face_part_candidate_dic['chin'], INDEX_CHIN, landmarks)
+        face_part_candidate_dic['chin'].append(each_img_chin)
+        each_img_nose = make_face_part_candidate_lst(face_part_candidate_dic['nose'], INDEX_NOSE, landmarks)
+        face_part_candidate_dic['nose'].append(each_img_nose)
+        each_img_right_eyebroes = make_face_part_candidate_lst(face_part_candidate_dic['right_eyebrows'], INDEX_RIGHT_EYEBROWS, landmarks)
+        face_part_candidate_dic['right_eyebrows'].append(each_img_right_eyebroes)
+        each_img_left_eyebroes = make_face_part_candidate_lst(face_part_candidate_dic['left_eyebrows'], INDEX_LEFT_EYEBROWS, landmarks)
+        face_part_candidate_dic['left_eyebrows'].append(each_img_left_eyebroes)  
+        each_img_right_eye = make_face_part_candidate_lst(face_part_candidate_dic['right_eye'], INDEX_RIGHT_EYE, landmarks)
+        face_part_candidate_dic['right_eye'].append(each_img_right_eye)
+        each_img_left_eye = make_face_part_candidate_lst(face_part_candidate_dic['left_eye'], INDEX_LEFT_EYE, landmarks)
+        face_part_candidate_dic['left_eye'].append(each_img_left_eye) 
+
+        each_img_outside_lips = make_face_part_candidate_lst(face_part_candidate_dic['outside_lips'], INDEX_OUTSIDE_LIPS , landmarks)
+        face_part_candidate_dic['outside_lips'].append(each_img_outside_lips) 
+        each_img_inside_lips = make_face_part_candidate_lst(face_part_candidate_dic['inside_lips'], INDEX_INSIDE_LIPS , landmarks)
+        face_part_candidate_dic['inside_lips'].append(each_img_inside_lips)        
+
         root, ext = os.path.splitext(image_path)
         cv2.imwrite(os.path.join(OUTPUT_DIR, root.split('/')[-1] + '_out' + ext), img)
+
+
+    # print(face_part_candidate_dic)
+    for k, v in face_part_candidate_dic.items():
+        random_num = random.randint(0, len(v)-1)
+        if len(v[random_num])==1:
+            # 選択したパーツが空の場合は、もう一度リトライ
+            random_num = random.randint(0, len(v)-1)
+            face_part_select_dic[k]=v[random_num]
+            
+        else:
+            face_part_select_dic[k]=v[random_num]
+        
+
+    #顔候補のリスト
+    print(face_part_select_dic)
+    
+
+
+
+if __name__ == '__main__':
+    main()
