@@ -276,6 +276,7 @@ def main():
     for k, v in face_part_candidate_dic.items():
         random_num = random.randint(0, len(v)-1)
         if len(v[random_num])==1:
+            # 選択したパーツが空の場合は、もう一度リトライ
             random_num = random.randint(0, len(v)-1)
             face_part_select_dic[k]=v[random_num]
             
