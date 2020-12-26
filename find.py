@@ -5,11 +5,11 @@ import os
 import sys
 import glob
 
-
+# image_paths = []
 # Cascade files directory path
 CASCADE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/haarcascades/"
 LEARNED_MODEL_PATH = os.path.dirname(
-    os.path.abspath(__file__)) + "/"
+    os.path.abspath(__file__)) + "/haarcascades/"
 predictor = dlib.shape_predictor(
     LEARNED_MODEL_PATH + 'helen-dataset.dat')
 face_cascade = cv2.CascadeClassifier(
@@ -164,13 +164,23 @@ def normalization(face_landmarks):
 
     return return_list
 
+def cut(partPoints, image_path):
+    # print(partPoints)
+    minX = min(partPoints[0])
+    maxX = max(partPoints[0])
+    minY = min(partPoints[1])
+    maxY = max(partPoints[1])
+
+    img = cv2.imread(image_path)
+    ret = img[maxY: minY , minX: maxX]
+    return ret
 
 def drow(imp, points):
 
     if  points[2]==INDEX_NOSE:
         cv2.drawMarker(img, (points[0], points[1]), (21, 255, 12)) # (B, G, R): 緑
     elif points[2]==INDEX_RIGHT_EYEBROWS:
-        cv2.drawMarker(img, (points[0], points[1]), (255, 0, 204)) # (B, G, R): ピンク
+        cv2.drawMarker(img, (points[0], points[1]), (255, 0, 204))  # (B, G, R): ピンク
     elif points[2]==INDEX_LEFT_EYEBROWS:
         cv2.drawMarker(img, (points[0], points[1]), (255, 0, 204)) # (B, G, R): ピンク
     elif points[2]==INDEX_RIGHT_EYE:
@@ -201,6 +211,7 @@ if __name__ == '__main__':
     [154-173]: right eyebrows
     [174-193]: left eyebrows
     '''
+    cutimage = cv2.imread(image_paths[0])
 
     for image_path in image_paths:
         img = cv2.imread(image_path)
@@ -209,11 +220,15 @@ if __name__ == '__main__':
         landmarks = facemark(gray)
         # print(landmarks)
         landmarks = normalization(landmarks)
-        print(landmarks)
-
+        print(landmarks[0])
         for landmark in landmarks:
+            # print(landmark[50])
+            # if landmark[50][2] <= 6:
+            #     cutimage = cut(landmark, image_path)
             for points in landmark:
                     drow(img, points)
 
         root, ext = os.path.splitext(image_path)
         cv2.imwrite(os.path.join(OUTPUT_DIR, root.split('/')[-1] + '_out' + ext), img)
+    # print(cutimage)
+    # cv2.imwrite('./output/cut.jpg',cutimage)
