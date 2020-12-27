@@ -6,33 +6,53 @@
   <title>Fukuwaraii!</title>
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="icon" type="image/png" href="/static/img/favicon.png">
-  <!-- <link rel="stylesheet" type="text/css" href="/static/css/style.css" media="screen and (min-width:765px)">
-  <link rel="stylesheet" type="text/css" href="/static/css/style_sp.css" media="screen and (max-width:764px)"> -->
+  <script type="text/javascript" src="/static/javascript.js"></script>
 </head>
+
 <body>
   
+  <!-- ローディング画面 -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <div class="anime">
+      <img class="anime_logo" src="/static/img/anime.png" alt="Fukuwaraii!">
+    </div>
+  </div>
+ 
+  <!-- コンテンツ部分 -->
   <div class="header">
     <div class="container">
       <div class="logo">
-        <img class="header-logo" src="/static/img/Fukuwaraii-moji.png" alt="Fukuwaraii!">
+        <img class="header_logo" src="/static/img/Fukuwaraii_moji.png" alt="Fukuwaraii!">    
       </div>
       <div class="help">
-        <img class="help_button" src="/static/img/help-button.png" alt="help">
+        <img class="help_button" src="/static/img/help_button.png" alt="help">
       </div>
     </div>
   
   <div class="editor">
-    <div class="edit">
-    </div>
+    <div class="edit"></div>
   </div>
 
   <div class="buttons">
-    <div class="left_button">
-      <img class="import" src="/static/img/import_button.png" alt="インポート">
+    <div class="upbutton">
+      <form action="#">
+        <div class="wrapper">
+          <div class="import1">
+            <input type="file" class="import" name="pic1">
+            <input type="submit" class="upload" value="upload">
+          </div>
+          <div class="import2">
+            <input type="file" class="import" name="pic2">
+            <input type="submit" class="upload" value="upload">
+          </div>
+        </div> 
+      </form>
     </div>
+    
     <div class="right_button">
-      <img class="twitter" src="/static/img/twitter_button.png" alt="拡散">
-      <img class="export" src="/static/img/export_button.png" alt="画像生成">
+      <img class="twitter" onClick="goClick1()" src="/static/img/twitter_button2.png" alt="拡散">
+      <img class="export" onClick="goClick2()" src="/static/img/export_button2.png" alt="画像生成">
     </div>
   </div>
       

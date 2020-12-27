@@ -1,3 +1,4 @@
+/* ----------------reset.css---------------- */
 body,
 h1,
 h2,
@@ -35,7 +36,63 @@ img {
   vertical-align: bottom;
 }
 
-/* ----------------reset.css---------------- */
+
+
+/*-------------ローディング画面-------------*/
+#loading {
+  width: 100vw;
+  height: 100vh;
+  transition: all 1s;
+  background-color: #FFEB8B;
+ /* 以下のコードを追加 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9998;
+  display: table;
+}
+
+.spinner {
+  width: 100px;
+  height: 100px;
+  margin: 200px auto;
+  background-color: #fff;
+  border-radius: 100%;
+  animation: sk-scaleout 1.0s infinite ease-in-out;
+  
+}
+.loaded {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.anime{
+  /* display: table-cell;
+  vertical-align: middle;
+  margin-right: 2em; */
+  position: absolute;
+  z-index: 9999;
+  bottom: 13em;
+  left: 5em;
+}
+.anime_logo{
+  width: 15em;
+  bottom: 10em;
+  margin-left: 0.8em;
+  margin-bottom: 3em;
+}
+
+/*--------------ローディングアニメーション------------*/
+@keyframes sk-scaleout {
+  0% {
+    transform: scale(0);
+  } 100% {
+    transform: scale(1.0);
+    opacity: 0;
+  }
+}
+
+/*----------body-----------*/
 @media screen and (max-width: 479px) { /*ウィンドウ幅が最大479pxまでの場合に適用*/
     *{
       margin: 0;
@@ -51,33 +108,34 @@ img {
       top: 0;
       }
       
-    .header-logo{
-      margin-top: 0.7em;
-      width: 87%;
+    .header_logo{
+      margin-top: 0.8em;
+      width: 8em;
     }
 
     .logo{
       margin-top: 0em;
-      margin-left: 0.3em;
+      margin-left: 0.7em;
       width: 10em;
     }
 
     .help_button{
-      margin-top: 0.2em;
+      margin-top: 0.1em;
       width: 70%;
     }
 
     .help{
-      margin-left: 6em;
+      margin-left: 4.5em;
     }
 
     .container{
       margin-top: 0em;
+      height: 3em;
       display: flex;
     }
 
     .edit{
-      height: 24em;
+      height: 20em;
       margin: 1em 1.5em;
       font-weight: bold;
       color: #6091d3;/*文字色*/
@@ -88,29 +146,65 @@ img {
     }
 
     .import{
-      width: 60%;
+      width: 18em;
+      height: 3em;
     }
 
     .twitter{
-      width: 60%;
+      width: 15%;
     }
 
     .export{
-      width: 60%;
+      width: 15%;
     }
 
-    .left_button{
-      width: 15em;
-      padding-right: 2em;
+    .upbutton{
+      width: 50em;
     }
+
     .right_button{
-      width: 15em;
+      width: 30em;
       display: flex;
-      padding-right: 3em;
+      margin-left: 5.5em;
     }
 
-    .buttons{
+    .imports{
       display: flex;
-      width:
+      height: 20%;
+    }
+
+    .add.plural{
+      margin-right: 3em;
+    }
+
+    form{
+      margin-right: 3em;
+    }
+
+    .upload{
+      margin-top: 2em;
+    }
+
+    .wrapper{
+      padding-left: 1em;
+    }
+
+    .import1{
+      margin-top: 1em;
+      width: 50em;
+      height: 2em;
+      display: flex;
+    }
+
+    input.upload{
+      margin-top: 0em;
+      height: 2em;
+    }
+
+    .import2{
+      margin-top: 1em;
+      width: 24.5em;
+      height: 2em;
+      display: flex;
     }
 }
