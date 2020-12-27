@@ -8,7 +8,6 @@ import random
 
 # random.seed(0)
 
-
 # Cascade files directory path
 CASCADE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/haarcascades/"
 LEARNED_MODEL_PATH = os.path.dirname(
@@ -271,9 +270,6 @@ def main():
         each_img_inside_lips = make_face_part_candidate_lst(face_part_candidate_dic['inside_lips'], INDEX_INSIDE_LIPS , landmarks)
         face_part_candidate_dic['inside_lips'].append(each_img_inside_lips)        
 
-        root, ext = os.path.splitext(image_path)
-        cv2.imwrite(os.path.join(OUTPUT_DIR, root.split('/')[-1] + '_out' + ext), img)
-
 
     # print(face_part_candidate_dic)
     for k, v in face_part_candidate_dic.items():
@@ -297,7 +293,7 @@ def main():
     img = np.ones((height, width, 3), np.uint8)*255
 
     drow(img, face_part_select_dic)
-    cv2.imwrite("test.jpg", img)
+    cv2.imwrite(os.path.join(OUTPUT_DIR, "test.jpg"), img)
 
 
 if __name__ == '__main__':
