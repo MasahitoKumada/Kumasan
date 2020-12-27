@@ -3,9 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/style.css">
   <title>Document</title>
 </head>
 <body>
+  <img src="../static/img/test.jpg" alt="" style="width: 200px; height: 200px;">
+  <form action="/" method="POST" enctype="multipart/form-data">
+    <input type="file" multiple="multiple" name="upload">
+    <input type="submit" value="send">
+  </form>
   
+  <div class="header">
+    <div class="container">
+      <div class="logo">
+        <img class="header-logo" src="/static/img/Fukuwaraii-moji.png" alt="Fukuwaraii!">
+      </div>
+      <div class="help">
+        <img class="help_button" src="/static/img/help-button.png" alt="help">
+      </div>
+    </div>
+  
+  <div class="editor">
+    <div class="edit">
+    </div>
+  </div>
+
+  <div class="buttons">
+    <div class="left_button">
+      <img class="import" src="/static/img/import_button.png" alt="インポート">
+    </div>
+    <div class="right_button">
+      <img class="twitter" src="/static/img/twitter_button.png" alt="拡散">
+      <img class="export" src="/static/img/export_button.png" alt="画像生成">
+    </div>
+  </div>
+      
+</div>
 </body>
 </html>
