@@ -316,8 +316,8 @@ def main():
 
     # for test
     # 白のキャンバスを作成し、顔候補を描画
-    width = 250
-    height = 250
+    std_img = cv2.imread(image_paths[0])
+    height, width, _ = std_img.shape
     img = np.ones((height, width, 3), np.uint8)*255
 
     drow(img, face_part_select_dic)
