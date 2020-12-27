@@ -191,6 +191,30 @@ def drow(img, face_part_select_dic):
                     cv2.drawMarker(img, (v[0], v[1]), (0, 255, 255)) # (B, G, R): 緑`
 
 
+
+def paste(img, k, vs):
+
+    center_of_gravity = [0,0]
+    # k, vs = face_part_select_dic.items():
+
+    if len(vs) == 1:
+        return img
+    else:
+        for v in vs:
+            center_of_gravity[0] += v[0]
+            center_of_gravity[1] += v[1]
+
+    center_of_gravity[0] /= len(vs)
+    center_of_gravity[1] /= len(vs)
+
+    # print(center_of_gravity[1])
+
+    cut_img = cv2.imread(OUTPUT_DIR + "/cut_" + k + ".jpg")
+
+    print(cut_img)
+
+    img.paste(cut_img, (center_of_gravity[0], center_of_gravity[1]))
+
 def make_face_part_candidate_lst(face_part_candidate_dic, index_part_name,  landmarks):
 
     tmp_arr = np.array([0, 0]) # 初期化
@@ -204,14 +228,24 @@ def make_face_part_candidate_lst(face_part_candidate_dic, index_part_name,  land
     return tmp_arr[1:]
 
 def cut(points, image_path):
-    xMin = min(points[0])
-    xMax = max(points[0])
-    yMin = min(points[1])
-    yMax = max(points[1])
+    xMax = np.max(points, axis=0)[0]
+    xMin = np.min(points, axis=0)[0]
+    yMax = np.max(points, axis=0)[1]
+    yMin = np.min(points, axis=0)[1]
 
+    # print(xMax)
+    # print(xMin)
+    # print(yMax)
+    # print(yMin)
+
+    # img = cv2.imread()
+    # print(image_path)
     img = cv2.imread(image_path)
-    return img[yMax:yMin, xMin:xMax]
-
+    # ret = img[int(yMax):int(yMin), int(xMin):int(xMax)]
+    ret = img[yMin - 10 : yMax + 10, xMin - 20: xMax + 20]
+    # print(ret)
+    return ret
+    # return img
 
 
 
@@ -279,9 +313,6 @@ def main():
         each_img_inside_lips = make_face_part_candidate_lst(face_part_candidate_dic['inside_lips'], INDEX_INSIDE_LIPS , landmarks)
         face_part_candidate_dic['inside_lips'].append(each_img_inside_lips)
 
-        root, ext = os.path.splitext(image_path)
-        cv2.imwrite(os.path.join(OUTPUT_DIR, root.split('/')[-1] + '_out' + ext), img)
-
 
     # print(face_part_candidate_dic)
     for k, v in face_part_candidate_dic.items():
@@ -289,10 +320,18 @@ def main():
         if len(v[random_num])==1:
             # 選択したパーツが空の場合は、もう一度リトライ
             random_num = random.randint(0, len(v)-1)
-            face_part_select_dic[k]=v[random_num]
+            face_part_select_dic[k] = v[random_num]
+            # print(face_part_select_dic[k])
+            # print("   ")
+            cutimg = cut(face_part_select_dic[k], image_paths[random_num])
+            cv2.imwrite(os.path.join(OUTPUT_DIR, "cut"+k+".jpg"), cutimg)
+
 
         else:
-            face_part_select_dic[k]=v[random_num]
+            face_part_select_dic[k] = v[random_num]
+            cutimg = cut(face_part_select_dic[k], image_paths[random_num])
+            cv2.imwrite(os.path.join(OUTPUT_DIR, "cut_"+k+".jpg"), cutimg)
+
 
 
     #顔候補のリスト
@@ -302,12 +341,12 @@ def main():
     # 白のキャンバスを作成し、顔候補を描画
     width = 500
     height = 500
-    img = np.ones((height, width, 3), np.uint8) * 255
+    img = np.ones((height, width, 3), np.uint8)*255
 
-    print(face_part_candidate_dic)
-
-    drow(img, face_part_select_dic)
-    cv2.imwrite("test.jpg", img)
+    # drow(img, face_part_select_dic)
+    # for part in face_part_select_dic:
+    #     img = paste(img, part, face_part_select_dic[part])
+    # cv2.imwrite(os.path.join(OUTPUT_DIR, "test.jpg"), img)
 
 
 if __name__ == '__main__':
