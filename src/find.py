@@ -1,11 +1,13 @@
 import cv2
+import datetime
 import dlib
+import glob
 import numpy as np
 import os
 import sys
-import glob
 import random
 
+# 固定
 # random.seed(0)
 
 # Cascade files directory path
@@ -33,6 +35,21 @@ INDEX_OUTSIDE_LIPS = 6
 INDEX_INSIDE_LIPS = 7
 INDEX_CHIN = 8
 
+
+def file_sort_time_based():
+    # フォルダ内のファイル名一覧のリストを取得して、更新時刻が古い順にファイルを削除していくコード
+
+    #上限ファイル数の指定
+    max_file = 100
+    image_paths = glob.glob(os.path.join(INPUT_DIR ,'*.jpg'))
+    #ファイルの最終更新時刻順にソートする
+    image_paths = sorted(image_paths, key=lambda f: os.stat(f).st_mtime, reverse=True)
+    #上限ファイル数を越えている場合、更新日時が古い順から10個削除する
+    if len(image_paths) > max_file:
+        for i in range(10):
+            os.remove(image_paths[i])
+
+    return image_paths 
 
 
 def face_position(gray_img):
@@ -205,8 +222,16 @@ def make_face_part_candidate_lst(face_part_candidate_dic, index_part_name,  land
     return tmp_arr[1:]
 
 
+def transform_coord(face_part_candidate_dic):
+    for k, vs in face_part_candidate_dic.items():
+        std_coords = vs[0].mean(axis=0)
+        for v_i in range(1, len(vs)):
+            # 座標変換
+            face_part_candidate_dic[k][v_i]= (vs[v_i] + std_coords-vs[v_i].mean(axis=0)).astype(int)
+
 
 def main():
+
     '''
     [0~40]: chin
     [41~57]: nose
@@ -218,7 +243,7 @@ def main():
     [174-193]: left eyebrows
     '''
 
-    image_paths = sorted(glob.glob(os.path.join(INPUT_DIR ,'*.jpg')))
+    image_paths = file_sort_time_based()
 
     # print(image_paths)
 
@@ -231,13 +256,13 @@ def main():
     right_eyebrows_lst = []
     left_eyebrows_lst = []
 
-    face_part_candidate_dic={
+    face_part_candidate_dic = {
         'chin':chin_lst, 'nose':nose_lst, 'outside_lips':outside_lip_lst, 'inside_lips':inside_lips_lst,
         'right_eye':right_eye_lst, 'left_eye':left_eye_lst, 'right_eyebrows':right_eyebrows_lst,
         'left_eyebrows':left_eyebrows_lst
     }
 
-    face_part_select_dic={
+    face_part_select_dic = {
         'chin':chin_lst, 'nose':nose_lst, 'outside_lips':outside_lip_lst, 'inside_lips':inside_lips_lst,
         'right_eye':right_eye_lst, 'left_eye':left_eye_lst, 'right_eyebrows':right_eyebrows_lst,
         'left_eyebrows':left_eyebrows_lst
@@ -270,8 +295,11 @@ def main():
         each_img_inside_lips = make_face_part_candidate_lst(face_part_candidate_dic['inside_lips'], INDEX_INSIDE_LIPS , landmarks)
         face_part_candidate_dic['inside_lips'].append(each_img_inside_lips)        
 
+    # print('bf': , face_part_candidate_dic)
+    # 座標変換(更新履歴が最新の画像を基準)
+    transform_coord(face_part_candidate_dic)
+    # print('af': , face_part_candidate_dic)
 
-    # print(face_part_candidate_dic)
     for k, v in face_part_candidate_dic.items():
         random_num = random.randint(0, len(v)-1)
         if len(v[random_num])==1:
@@ -288,12 +316,15 @@ def main():
 
     # for test
     # 白のキャンバスを作成し、顔候補を描画
-    width = 500
-    height = 500
+    width = 250
+    height = 250
     img = np.ones((height, width, 3), np.uint8)*255
 
     drow(img, face_part_select_dic)
-    cv2.imwrite(os.path.join(OUTPUT_DIR, "test.jpg"), img)
+
+    dt_now = datetime.datetime.now()
+
+    cv2.imwrite(os.path.join(OUTPUT_DIR, dt_now.isoformat()+".jpg"), img)
 
 
 if __name__ == '__main__':
