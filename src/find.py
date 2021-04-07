@@ -7,7 +7,6 @@ import random
 
 # random.seed(0)
 
-
 # Cascade files directory path
 CASCADE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/haarcascades/"
 LEARNED_MODEL_PATH = os.path.dirname(
@@ -17,11 +16,9 @@ predictor = dlib.shape_predictor(
 face_cascade = cv2.CascadeClassifier(
     CASCADE_PATH + 'haarcascade_frontalface_default.xml')
 
-
 # In & Out: setting
 INPUT_DIR = './input'
 OUTPUT_DIR = './output'
-
 
 # 顔の部位ラベル
 INDEX_NOSE = 1
@@ -32,7 +29,6 @@ INDEX_LEFT_EYE = 5
 INDEX_OUTSIDE_LIPS = 6
 INDEX_INSIDE_LIPS = 7
 INDEX_CHIN = 8
-
 
 
 def face_position(gray_img):
@@ -187,9 +183,7 @@ def drow(img, points):
         cv2.drawMarker(img, (points[0], points[1]), (0, 255, 255)) # (B, G, R): 緑
 
 
-def make_face_part_candidate_lst(face_part_candidate_dic, index_part_name,  landmarks):
-
-    
+def make_face_part_candidate_lst(face_part_candidate_dic, index_part_name,  landmarks):   
     tmp_arr = np.array([0, 0]) # 初期化
     for landmark in landmarks:    
         for points in landmark:
@@ -199,8 +193,6 @@ def make_face_part_candidate_lst(face_part_candidate_dic, index_part_name,  land
                     tmp_arr, [points[0], points[1]]
                     ])
     return tmp_arr[1:]
-
-
 
 
 def main():
@@ -286,8 +278,6 @@ def main():
     #顔候補のリスト
     print(face_part_select_dic)
     
-
-
 
 if __name__ == '__main__':
     main()
