@@ -3,7 +3,6 @@ import dlib
 from flask import Flask, render_template, request,redirect,session
 import numpy as np
 import os
-import sys
 import glob
 import random
 
