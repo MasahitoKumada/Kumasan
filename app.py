@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request,redirect,session
-from datetime import datetime
 import cv2
 import dlib
+from flask import Flask, render_template, request,redirect,session
 import numpy as np
 import os
 import sys
