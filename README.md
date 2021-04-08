@@ -5,3 +5,4 @@
 
 ## アプリ起動方法
 1. pip install -r requirement
+2. python app.py
