@@ -27,7 +27,7 @@
 
 ## 使用技術
 - Frontend: python, Flask
-- Backeend: python, opencv
+- Backend: python, opencv
 
 ## 今後の課題
 - Frontend: 画像生成, SNSとの連携機能の実装
