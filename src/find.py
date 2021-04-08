@@ -62,7 +62,7 @@ def facemark(gray_img):
 
     for face in faces_roi:
         x, y, w, h = face
-        face_img = gray_img[y: y + h, x: x + w];
+        face_img = gray_img[y: y + h, x: x + w]
 
         detector = dlib.get_frontal_face_detector()
         rects = detector(gray_img, 1)

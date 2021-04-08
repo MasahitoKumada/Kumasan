@@ -25,16 +25,15 @@ INDEX_CHIN = 8
 # assert os.path.isfile('IMG_1111_riku2.jpg')
 
 # Cascade files directory path
-CASCADE_PATH = os.path.dirname(os.path.abspath(__file__)) + "src/haarcascades/"
+CASCADE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/src/haarcascades/"
 LEARNED_MODEL_PATH = os.path.dirname(
-    os.path.abspath(__file__)) + "\\"
+    os.path.abspath(__file__)) + "/src/learned-models/"
     #helen-dataset.datのPATH
-print(LEARNED_MODEL_PATH)
 predictor = dlib.shape_predictor(
     LEARNED_MODEL_PATH + 'helen-dataset.dat')
         # openCVの中のdataフォルダのhaarcascade_frontalface_default.xmlのPATH
 face_cascade = cv2.CascadeClassifier(
-    'C:/Python38/lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
+    CASCADE_PATH + 'haarcascade_frontalface_default.xml')
 
 
 @app.route('/', methods=["GET"])
@@ -57,7 +56,7 @@ def get_face():
         print('#####################################')
         print(fileName)
         item.save(os.path.join(save_path, fileName)) 
-        filePath.append(save_path +fileName)
+        filePath.append(save_path + fileName)
 
     print(filePath)
     
