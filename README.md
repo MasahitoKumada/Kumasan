@@ -23,7 +23,7 @@
 ## アプリ起動方法
 1. pip install -r requirement
 2. python app.py
-
+* python3系(動作確認3.6.8)で実行してください.
 
 ## 使用技術
 - Frontend: python, Flask
