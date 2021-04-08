@@ -8,7 +8,7 @@
 
 
 ## プレゼン資料
-[ https://docs.google.com/presentation/d/1VgksbunSQY3jBK0-RsF1lz1n6cbTx9p08euMEajI49Y/edit#slide=id.gb2b64906ad_1_24 ]
+[aaa https://docs.google.com/presentation/d/1VgksbunSQY3jBK0-RsF1lz1n6cbTx9p08euMEajI49Y/edit#slide=id.gb2b64906ad_1_24 ]
 
 ## アプリ起動方法
 1. pip install -r requirement
