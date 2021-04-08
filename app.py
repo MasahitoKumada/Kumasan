@@ -9,8 +9,8 @@ import random
 app = Flask(__name__) 
 
 # static setting
-OUTPUT_DIR = "static/output/"
 STATIC_DIR = "static/img/"
+OUT_DIR = "static/img_out/"
 
 # 顔の部位ラベル
 INDEX_NOSE = 1
@@ -21,8 +21,6 @@ INDEX_LEFT_EYE = 5
 INDEX_OUTSIDE_LIPS = 6
 INDEX_INSIDE_LIPS = 7
 INDEX_CHIN = 8
-
-# assert os.path.isfile('IMG_1111_riku2.jpg')
 
 # Cascade files directory path
 CASCADE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/src/haarcascades/"
@@ -51,24 +49,19 @@ def get_face():
     filePath = []
     for item in uploads:
         fileName = item.filename
-        save_path = get_save_path()
+        save_path = STATIC_DIR
             
         print('#####################################')
         print(fileName)
         item.save(os.path.join(save_path, fileName)) 
-        filePath.append(save_path + fileName)
+        filePath.append(os.path.join(save_path, fileName))
 
     print(filePath)
     
-
-    main()
-    
+    make_random_select_figure()
 
     return render_template('index.html')
 
-def get_save_path():
-    path_dir = "static/img/"
-    return path_dir
 
 def face_position(gray_img):
     """Detect faces position
@@ -101,7 +94,7 @@ def facemark(gray_img):
 
     for face in faces_roi:
         x, y, w, h = face
-        face_img = gray_img[y: y + h, x: x + w];
+        face_img = gray_img[y: y + h, x: x + w]
 
         detector = dlib.get_frontal_face_detector()
         rects = detector(gray_img, 1)
@@ -244,7 +237,7 @@ def make_face_part_candidate_lst(face_part_candidate_dic, index_part_name,  land
 
 
 
-def main():
+def make_random_select_figure():
     '''
     [0~40]: chin
     [41~57]: nose
@@ -258,7 +251,7 @@ def main():
 
     image_paths = sorted(glob.glob(os.path.join(STATIC_DIR,'*.jpg')))
 
-    # print(image_paths)
+    print(image_paths)
 
     chin_lst = []
     nose_lst = []
@@ -269,13 +262,13 @@ def main():
     right_eyebrows_lst = []
     left_eyebrows_lst = []
 
-    face_part_candidate_dic={
+    face_part_candidate_dic = {
         'chin':chin_lst, 'nose':nose_lst, 'outside_lips':outside_lip_lst, 'inside_lips':inside_lips_lst,
         'right_eye':right_eye_lst, 'left_eye':left_eye_lst, 'right_eyebrows':right_eyebrows_lst,
         'left_eyebrows':left_eyebrows_lst
     }
 
-    face_part_select_dic={
+    face_part_select_dic = {
         'chin':chin_lst, 'nose':nose_lst, 'outside_lips':outside_lip_lst, 'inside_lips':inside_lips_lst,
         'right_eye':right_eye_lst, 'left_eye':left_eye_lst, 'right_eyebrows':right_eyebrows_lst,
         'left_eyebrows':left_eyebrows_lst
@@ -306,10 +299,7 @@ def main():
         each_img_outside_lips = make_face_part_candidate_lst(face_part_candidate_dic['outside_lips'], INDEX_OUTSIDE_LIPS , landmarks)
         face_part_candidate_dic['outside_lips'].append(each_img_outside_lips) 
         each_img_inside_lips = make_face_part_candidate_lst(face_part_candidate_dic['inside_lips'], INDEX_INSIDE_LIPS , landmarks)
-        face_part_candidate_dic['inside_lips'].append(each_img_inside_lips)        
-
-        root, ext = os.path.splitext(image_path)
-        cv2.imwrite(os.path.join(OUTPUT_DIR, root.split('/')[-1] + '_out' + ext), img)
+        face_part_candidate_dic['inside_lips'].append(each_img_inside_lips)
 
 
     # print(face_part_candidate_dic)
@@ -327,14 +317,14 @@ def main():
     #顔候補のリスト
     # print(face_part_select_dic)
 
-    # for test
     # 白のキャンバスを作成し、顔候補を描画
     width = 500
     height = 500
-    img = np.ones((height, width, 3), np.uint8)*255
+    img_out = np.ones((height, width, 3), np.uint8)*255
 
-    drow(img, face_part_select_dic)
-    cv2.imwrite("static/img/test.jpg", img)
+    # 描画し、保存
+    drow(img_out, face_part_select_dic)
+    cv2.imwrite(os.path.join(OUT_DIR, "out.jpg"), img_out)
 
 
 # flaskアプリを動かすための記述
