@@ -6,7 +6,7 @@
 - test.txt: find.pyの実行結果の一例.
 
 # プログラム実行方法
-- pip install -r requirement.txt
-- python find.py: input内の元画像について, 顔パーツを切り出し元画像と合わせてoutputに出力するプログラム.
+1. pip install -r requirement.txt
+2. python find.py: input内の元画像について, 顔パーツを切り出し元画像と合わせてoutputに出力するプログラム.
 
 * python3系(動作確認3.6.8)で実行してください.
