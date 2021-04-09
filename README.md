@@ -16,7 +16,6 @@
 -  顔のパーツを表示するので, 匿名性が高い(SNSに投稿しやすい).
 -  データが蓄積されていくため, ランダム性が高く飽きない.
 
-
 ## プレゼン資料
 - [リンク](https://docs.google.com/presentation/d/1VgksbunSQY3jBK0-RsF1lz1n6cbTx9p08euMEajI49Y/edit#slide=id.gb2b64906ad_1_24)
 
@@ -32,6 +31,6 @@
 ## 今後の課題
 - Frontend: 画像生成, SNSとの連携機能の実装
 - Backeend: パーツ画像の貼り付け, 事前の顔画像の各パーツの座標データをデータベースに保持する
-
+- serverにdeploy. 現状プロジェクトが約400MBであり, Herokuの無料ヴァージョンではデプロイがうまくいかない模様.
 ## 参考
 - [PythonでdlibとOpenCVを用いてHelen datasetを学習して顔器官検出](https://qiita.com/kekeho/items/0b2d4ed5192a4c90a0ac)
