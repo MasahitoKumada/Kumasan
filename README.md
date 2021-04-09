@@ -32,6 +32,6 @@
 ## 今後の課題
 - Frontend: 画像生成, SNSとの連携機能の実装
 - Backeend: パーツ画像の貼り付け, 事前の顔画像の各パーツの座標データをデータベースに保持する
-
+- serverにdeploy. 現状プロジェクトが約400MBであり, Heerokuの無料ヴァージョンではデプロイがうまくいかない模様.
 ## 参考
 - [PythonでdlibとOpenCVを用いてHelen datasetを学習して顔器官検出](https://qiita.com/kekeho/items/0b2d4ed5192a4c90a0ac)
